@@ -9,3 +9,4 @@ inventory = [
         "stock": 10
     }
 ]
+
