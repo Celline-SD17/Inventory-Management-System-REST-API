@@ -1,5 +1,5 @@
 from app import app
-import pytest 
+
 client = app.test_client()
 def test_get_inventory():
     response = client.get('/inventory')
@@ -14,5 +14,3 @@ def test_add_item():
         "stock": 10
     })
     assert response.status_code == 201
-
-

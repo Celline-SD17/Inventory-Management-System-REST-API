@@ -48,7 +48,7 @@ def menu():
             response = requests.get(f"{BASE_URL}/product/{barcode}")
             print(response.json())
         elif choice == "7":
-            print("Exiting the program.")
+            print("Exiting the program...")
             break
         else:
             print("Invalid choice. Please try again.")
