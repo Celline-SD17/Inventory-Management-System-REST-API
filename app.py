@@ -1,0 +1,83 @@
+from flask import Flask, jsonify, request
+from inventory import inventory
+from openfoodfacts import fetch_product
+
+app = Flask(__name__)
+
+#Fetching all items
+
+@app.route('/inventory', methods=["GET"])
+def get_inventory():
+    return jsonify(inventory), 200
+
+#fetching a single item
+@app.route('/inventory/<int:id>', methods=["GET"])
+def get_item(id):
+    item = next((item for item in inventory if item["id"] == id), None)
+    if item:
+        return jsonify(item), 200
+    else:
+        return jsonify({"error": "Item not found"}), 404
+
+#Adding an item
+@app.route('/inventory', methods=["POST"])
+def add_item():
+    data = request.get_json()
+    barcode = data.get("barcode")
+    price = data.get("price")
+    stock = data.get("stock")
+    api_product = fetch_product(barcode)
+    if api_product is None:
+        return jsonify({"error": "Item not found "}), 404
+    new_item = {
+        "id": len(inventory) +1,
+        "barcode": barcode,
+        "product_name": api_product['product_name'],
+        "brand": api_product["brand"],
+        "ingredients": api_product["ingredients"],
+        "price": price,
+        "stock": stock
+    }
+    inventory.append(new_item)
+    return jsonify(new_item), 201
+
+#Updating stock levels or Item prices
+@app.route('/inventory/<int:id>', methods=["PATCH"])
+def update_item(id):
+    item = next((item for item in inventory if item["id"] == id), None)
+    if item is None:
+        return jsonify({"error": "Item not found"}), 404
+
+    data = request.get_json()
+    price = data.get("price")
+    stock = data.get("stock")
+
+    if price is not None:
+        item["price"] = price
+    if stock is not None:
+        item["stock"] = stock
+
+    return jsonify(item), 200
+#Deleting a product
+@app.route('/inventory/<int:id>', methods=["DELETE"])
+def delete_item(id):
+    item = next((item for item in inventory if item["id"] == id), None)
+    if item is None:
+        return jsonify({"error": "Item not found"}), 404
+
+    inventory.remove(item)
+    return jsonify({"message": "Item deleted successfully"}), 200
+
+#Searching an item by barcode
+
+@app.route('/product/<barcode>', methods=["GET"])
+def search_api(barcode):
+    product = fetch_product(barcode)
+    if product is None:
+        return jsonify({"error": "Item not found"}), 404
+    return jsonify(product), 200
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    
