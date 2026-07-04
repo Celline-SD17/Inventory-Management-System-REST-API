@@ -5,6 +5,9 @@ from openfoodfacts import fetch_product
 app = Flask(__name__)
 
 #Fetching all items
+@app.route('/')
+def home():
+    return jsonify({"message": "Welcome to the Inventory Management System"}), 200
 
 @app.route('/inventory', methods=["GET"])
 def get_inventory():
