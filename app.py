@@ -26,11 +26,19 @@ def add_item():
     barcode = data.get("barcode")
     price = data.get("price")
     stock = data.get("stock")
+
+    if not barcode:
+        return jsonify({"errror": "Barcode is required"}), 400
+    if price is None:
+        return jsonify({"error": "Price is required"}), 400
+    if stock is None:
+        return jsonify({"error": "Stock is required"}), 400
+
     api_product = fetch_product(barcode)
     if api_product is None:
         return jsonify({"error": "Item not found "}), 404
     new_item = {
-        "id": len(inventory) +1,
+        "id": max(item["id"] for item in inventory) + 1 if inventory else 1,
         "barcode": barcode,
         "product_name": api_product['product_name'],
         "brand": api_product["brand"],

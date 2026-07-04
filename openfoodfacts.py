@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = "https://world.openfoodfacts.net/api/v3.6/product/3274080005003.json"
+BASE_URL = "https://world.openfoodfacts.net/api/v2/product"
 
 def fetch_product(barcode):
     url = f"{BASE_URL}/{barcode}"
