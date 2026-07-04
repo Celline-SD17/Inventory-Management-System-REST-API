@@ -15,8 +15,11 @@ def menu():
         choice = input("Enter your choice (1-7): ")
 
         if choice == "1":
-            response = requests.get(f"{BASE_URL}/inventory")
-            print(response.json())
+            try:
+                response = requests.get(f"{BASE_URL}/inventory")
+                print(response.json())
+            except requests.exceptions.ConnectionError:
+                print("Could not connect to the Flask server. Please ensure the server is running.")
         elif choice == "2":
             id = input("Enter the item id: ")
             response = requests.get(f"{BASE_URL}/inventory/{id}")
